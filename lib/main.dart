@@ -1,0 +1,306 @@
+import 'dart:developer';
+
+import 'package:contacts_service/contacts_service.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'dart:async';
+
+import 'package:phone_state_background/phone_state_background.dart';
+import 'package:system_alert_window/system_alert_window.dart';
+
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const MyApp());
+}
+
+String _platformVersion = 'Unknown';
+
+void showOverlayWindow(String phoneNumber) {
+  SystemWindowHeader header = SystemWindowHeader(
+    title: SystemWindowText(text: "Bedawy", fontSize: 20, textColor: Colors.black, fontWeight: FontWeight.BOLD),
+    padding: SystemWindowPadding.setSymmetricPadding(12, 12),
+    subTitle: SystemWindowText(text: phoneNumber, fontSize: 14, fontWeight: FontWeight.BOLD, textColor: Colors.black87),
+    decoration: SystemWindowDecoration(startColor: Colors.grey[100]),
+    buttonPosition: ButtonPosition.TRAILING,
+  );
+  SystemWindowBody body = SystemWindowBody(
+    rows: [
+      EachRow(
+        columns: [
+          EachColumn(text: SystemWindowText(text: phoneNumber, fontSize: 12, textColor: Colors.black45)),
+        ],
+        gravity: ContentGravity.CENTER,
+      ),
+      EachRow(
+        columns: [
+          EachColumn(
+            text: SystemWindowText(text: "Long data of the body", fontSize: 12, textColor: Colors.black87, fontWeight: FontWeight.BOLD),
+            padding: SystemWindowPadding.setSymmetricPadding(6, 8),
+            decoration: SystemWindowDecoration(startColor: Colors.white, borderRadius: 25.0),
+            margin: SystemWindowMargin(top: 4),
+          ),
+        ],
+        gravity: ContentGravity.CENTER,
+      ),
+      EachRow(
+        columns: [
+          EachColumn(text: SystemWindowText(text: "Description", fontSize: 10, textColor: Colors.black45)),
+        ],
+        gravity: ContentGravity.LEFT,
+        margin: SystemWindowMargin(top: 8),
+      ),
+      EachRow(
+        columns: [
+          EachColumn(
+            text: SystemWindowText(text: "Some random description.", fontSize: 13, textColor: Colors.black54, fontWeight: FontWeight.BOLD),
+          ),
+        ],
+        gravity: ContentGravity.LEFT,
+      ),
+    ],
+    padding: SystemWindowPadding(left: 16, right: 16, bottom: 12, top: 12),
+  );
+  SystemWindowFooter footer = SystemWindowFooter(
+    buttons: [
+      SystemWindowButton(
+        text: SystemWindowText(text: "نعم", fontSize: 12, textColor: Colors.white),
+        tag: "focus_button",
+        width: 0,
+        padding: SystemWindowPadding(left: 10, right: 10, bottom: 10, top: 10),
+        height: SystemWindowButton.WRAP_CONTENT,
+        decoration: SystemWindowDecoration(
+          startColor: Colors.lightBlueAccent,
+          endColor: Colors.blue,
+          borderWidth: 0,
+          borderRadius: 30.0,
+        ),
+      ),
+      SystemWindowButton(
+        text: SystemWindowText(text: "لا", fontSize: 12, textColor: Colors.white),
+        tag: "simple_button",
+        width: 0,
+        padding: SystemWindowPadding(left: 10, right: 10, bottom: 10, top: 10),
+        height: SystemWindowButton.WRAP_CONTENT,
+        decoration: SystemWindowDecoration(
+          startColor: Colors.lightBlueAccent,
+          endColor: Colors.blue,
+          borderWidth: 0,
+          borderRadius: 30.0,
+        ),
+      ),
+    ],
+    padding: SystemWindowPadding(left: 16, right: 16, bottom: 12, top: 10),
+    decoration: SystemWindowDecoration(startColor: Colors.white),
+    buttonsPosition: ButtonPosition.CENTER,
+  );
+  SystemAlertWindow.showSystemWindow(
+    height: 230,
+    header: header,
+    body: body,
+    footer: footer,
+    margin: SystemWindowMargin(left: 8, right: 8, top: 200, bottom: 0),
+    gravity: SystemWindowGravity.TOP,
+    notificationTitle: "Incoming Call",
+    notificationBody: "+1 646 980 4741",
+    prefMode: SystemWindowPrefMode.OVERLAY,
+    backgroundColor: Colors.amber,
+    isDisableClicks: false,
+  );
+}
+
+@pragma('vm:entry-point')
+Future<void> phoneStateBackgroundCallbackHandler(
+  PhoneStateBackgroundEvent event,
+  String number,
+  int duration,
+) async {
+  switch (event) {
+    case PhoneStateBackgroundEvent.incomingstart:
+      log('Incoming call start, number: $number, duration: $duration s');
+      break;
+    case PhoneStateBackgroundEvent.incomingmissed:
+      showOverlayWindow(number);
+      log('Incoming call missed, number: $number, duration: $duration s');
+      break;
+    case PhoneStateBackgroundEvent.incomingreceived:
+      log('Incoming call received, number: $number, duration: $duration s');
+      break;
+    case PhoneStateBackgroundEvent.incomingend:
+      log('Incoming call ended, number: $number, duration $duration s');
+      break;
+    case PhoneStateBackgroundEvent.outgoingstart:
+      log('Ougoing call start, number: $number, duration: $duration s');
+      break;
+    case PhoneStateBackgroundEvent.outgoingend:
+      log('Ougoing call ended, number: $number, duration: $duration s');
+      break;
+  }
+}
+
+@pragma('vm:entry-point')
+void callBack(String tag) {
+  WidgetsFlutterBinding.ensureInitialized();
+  log(tag);
+  switch (tag) {
+    case "simple_button":
+    case "updated_simple_button":
+      SystemAlertWindow.closeSystemWindow(prefMode: SystemWindowPrefMode.OVERLAY);
+      break;
+    case "focus_button":
+      log("Focus button has been called");
+      SystemAlertWindow.closeSystemWindow(prefMode: SystemWindowPrefMode.OVERLAY);
+      break;
+    default:
+      log("OnClick event of $tag");
+  }
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Phone State Background',
+      theme: ThemeData(primarySwatch: Colors.blueGrey),
+      home: const MyHomePage(title: 'Phone State Background'),
+    );
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
+  final String title;
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
+  bool hasPermission = false;
+
+  @override
+  Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
+    if (state == AppLifecycleState.resumed) {
+      await _hasPermission();
+    }
+  }
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addObserver(this);
+    _hasPermission();
+    super.initState();
+    _initPlatformState();
+    _requestPermissions();
+    SystemAlertWindow.registerOnClickListener(callBack);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  Future<void> _hasPermission() async {
+    final permission = await PhoneStateBackground.checkPermission();
+    if (mounted) {
+      setState(() => hasPermission = permission);
+    }
+  }
+
+  Future<void> _requestPermission() async {
+    await PhoneStateBackground.requestPermissions();
+  }
+
+  Future<void> _stop() async {
+    await PhoneStateBackground.stopPhoneStateBackground();
+  }
+
+  Future<void> _init() async {
+    if (hasPermission != true) return;
+    await PhoneStateBackground.initialize(phoneStateBackgroundCallbackHandler);
+  }
+
+  // Platform messages are asynchronous, so we initialize in an async method.
+  Future<void> _initPlatformState() async {
+    await SystemAlertWindow.enableLogs(true);
+    String platformVersion;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      platformVersion = (await SystemAlertWindow.platformVersion)!;
+    } on PlatformException {
+      platformVersion = 'Failed to get platform version.';
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+
+    setState(() {
+      _platformVersion = platformVersion;
+    });
+  }
+
+  Future<void> _requestPermissions() async {
+    await SystemAlertWindow.requestPermissions(prefMode: SystemWindowPrefMode.OVERLAY);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              'Has Permission: $hasPermission',
+              style: TextStyle(
+                fontSize: 16,
+                color: hasPermission ? Colors.green : Colors.red,
+              ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            SizedBox(
+              width: 180,
+              child: ElevatedButton(
+                onPressed: () => _requestPermission(),
+                child: const Text('Check Permission'),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: SizedBox(
+                width: 180,
+                child: ElevatedButton(
+                  onPressed: () => _init(),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green, // Background color
+                  ),
+                  child: const Text('Start Listener'),
+                ),
+              ),
+            ),
+            SizedBox(
+              width: 180,
+              child: ElevatedButton(
+                onPressed: () => _stop(),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red, // Background color
+                ),
+                child: const Text('Stop Listener'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
