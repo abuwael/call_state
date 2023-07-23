@@ -1,10 +1,7 @@
 import 'dart:developer';
-
-import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
-
 import 'package:phone_state_background/phone_state_background.dart';
 import 'package:system_alert_window/system_alert_window.dart';
 
@@ -21,71 +18,80 @@ void showOverlayWindow(String phoneNumber) {
     padding: SystemWindowPadding.setSymmetricPadding(12, 12),
     subTitle: SystemWindowText(text: phoneNumber, fontSize: 14, fontWeight: FontWeight.BOLD, textColor: Colors.black87),
     decoration: SystemWindowDecoration(startColor: Colors.grey[100]),
-    buttonPosition: ButtonPosition.TRAILING,
+    // buttonPosition: ButtonPosition.TRAILING,
   );
   SystemWindowBody body = SystemWindowBody(
     rows: [
+      // EachRow(
+      //   columns: [
+      //     EachColumn(text: SystemWindowText(text: phoneNumber, fontSize: 12, textColor: Colors.black45)),
+      //   ],
+      //   gravity: ContentGravity.CENTER,
+      // ),
+      // EachRow(
+      //   columns: [
+      //     EachColumn(
+      //       text: SystemWindowText(text: "Long data of the body", fontSize: 12, textColor: Colors.black87, fontWeight: FontWeight.BOLD),
+      //       padding: SystemWindowPadding.setSymmetricPadding(6, 8),
+      //       decoration: SystemWindowDecoration(startColor: Colors.white, borderRadius: 25.0),
+      //       margin: SystemWindowMargin(top: 4),
+      //     ),
+      //   ],
+      //   gravity: ContentGravity.CENTER,
+      // ),
+      // EachRow(
+      //   columns: [
+      //     EachColumn(text: SystemWindowText(text: "Description", fontSize: 10, textColor: Colors.black45)),
+      //   ],
+      //   gravity: ContentGravity.LEFT,
+      //   margin: SystemWindowMargin(top: 8),
+      // ),
+      // EachRow(
+      //   columns: [
+      //     EachColumn(
+      //       text: SystemWindowText(text: "Some random description.", fontSize: 13, textColor: Colors.black54, fontWeight: FontWeight.BOLD),
+      //     ),
+      //   ],
+      //   gravity: ContentGravity.LEFT,
+      // ),
       EachRow(
         columns: [
-          EachColumn(text: SystemWindowText(text: phoneNumber, fontSize: 12, textColor: Colors.black45)),
+          EachColumn(text: SystemWindowText(text: 'هل تريد حفظ مهمة لجهة الاتصال دي', fontSize: 20, textColor: Colors.black, fontWeight: FontWeight.BOLD)),
         ],
         gravity: ContentGravity.CENTER,
       ),
       EachRow(
         columns: [
           EachColumn(
-            text: SystemWindowText(text: "Long data of the body", fontSize: 12, textColor: Colors.black87, fontWeight: FontWeight.BOLD),
-            padding: SystemWindowPadding.setSymmetricPadding(6, 8),
-            decoration: SystemWindowDecoration(startColor: Colors.white, borderRadius: 25.0),
-            margin: SystemWindowMargin(top: 4),
+            text: SystemWindowText(text: "Some random description.", fontSize: 20, textColor: Colors.black, fontWeight: FontWeight.BOLD),
           ),
         ],
         gravity: ContentGravity.CENTER,
-      ),
-      EachRow(
-        columns: [
-          EachColumn(text: SystemWindowText(text: "Description", fontSize: 10, textColor: Colors.black45)),
-        ],
-        gravity: ContentGravity.LEFT,
-        margin: SystemWindowMargin(top: 8),
-      ),
-      EachRow(
-        columns: [
-          EachColumn(
-            text: SystemWindowText(text: "Some random description.", fontSize: 13, textColor: Colors.black54, fontWeight: FontWeight.BOLD),
-          ),
-        ],
-        gravity: ContentGravity.LEFT,
       ),
     ],
-    padding: SystemWindowPadding(left: 16, right: 16, bottom: 12, top: 12),
+    padding: SystemWindowPadding(left: 16, right: 16, bottom: 10, top: 10),
   );
   SystemWindowFooter footer = SystemWindowFooter(
     buttons: [
       SystemWindowButton(
-        text: SystemWindowText(text: "نعم", fontSize: 12, textColor: Colors.white),
+        text: SystemWindowText(text: "نعم", fontSize: 15, textColor: Colors.white),
         tag: "focus_button",
         width: 0,
         padding: SystemWindowPadding(left: 10, right: 10, bottom: 10, top: 10),
         height: SystemWindowButton.WRAP_CONTENT,
-        decoration: SystemWindowDecoration(
-          startColor: Colors.lightBlueAccent,
-          endColor: Colors.blue,
-          borderWidth: 0,
-          borderRadius: 30.0,
-        ),
+        decoration: SystemWindowDecoration(startColor: Colors.blue, endColor: Colors.blueAccent, borderWidth: 0, borderRadius: 18.0),
       ),
       SystemWindowButton(
-        text: SystemWindowText(text: "لا", fontSize: 12, textColor: Colors.white),
+        text: SystemWindowText(text: "لا", fontSize: 15, textColor: Colors.white),
         tag: "simple_button",
         width: 0,
         padding: SystemWindowPadding(left: 10, right: 10, bottom: 10, top: 10),
         height: SystemWindowButton.WRAP_CONTENT,
         decoration: SystemWindowDecoration(
-          startColor: Colors.lightBlueAccent,
-          endColor: Colors.blue,
+          startColor: Colors.blue,
+          endColor: Colors.blueAccent,
           borderWidth: 0,
-          borderRadius: 30.0,
+          borderRadius: 18.0,
         ),
       ),
     ],
@@ -103,7 +109,7 @@ void showOverlayWindow(String phoneNumber) {
     notificationTitle: "Incoming Call",
     notificationBody: "+1 646 980 4741",
     prefMode: SystemWindowPrefMode.OVERLAY,
-    backgroundColor: Colors.amber,
+    backgroundColor: Colors.grey,
     isDisableClicks: false,
   );
 }
@@ -234,9 +240,6 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       platformVersion = 'Failed to get platform version.';
     }
 
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
     if (!mounted) return;
 
     setState(() {
@@ -260,14 +263,9 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           children: <Widget>[
             Text(
               'Has Permission: $hasPermission',
-              style: TextStyle(
-                fontSize: 16,
-                color: hasPermission ? Colors.green : Colors.red,
-              ),
+              style: TextStyle(fontSize: 16, color: hasPermission ? Colors.green : Colors.red),
             ),
-            const SizedBox(
-              height: 20,
-            ),
+            const SizedBox(height: 20),
             SizedBox(
               width: 180,
               child: ElevatedButton(
@@ -281,9 +279,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 width: 180,
                 child: ElevatedButton(
                   onPressed: () => _init(),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green, // Background color
-                  ),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
                   child: const Text('Start Listener'),
                 ),
               ),
