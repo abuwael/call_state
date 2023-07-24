@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
@@ -12,13 +13,14 @@ void main() {
 
 String _platformVersion = 'Unknown';
 
-void showOverlayWindow(String phoneNumber) {
+Future<void> showOverlayWindow(String phoneNumber) async {
+  String callerName = await getCallerName(phoneNumber);
+
   SystemWindowHeader header = SystemWindowHeader(
-    title: SystemWindowText(text: "Bedawy", fontSize: 20, textColor: Colors.black, fontWeight: FontWeight.BOLD),
+    title: SystemWindowText(text: callerName, fontSize: 20, textColor: Colors.black, fontWeight: FontWeight.BOLD),
     padding: SystemWindowPadding.setSymmetricPadding(12, 12),
     subTitle: SystemWindowText(text: phoneNumber, fontSize: 14, fontWeight: FontWeight.BOLD, textColor: Colors.black87),
     decoration: SystemWindowDecoration(startColor: Colors.grey[100]),
-    // buttonPosition: ButtonPosition.TRAILING,
   );
   SystemWindowBody body = SystemWindowBody(
     rows: [
@@ -55,15 +57,13 @@ void showOverlayWindow(String phoneNumber) {
       //   gravity: ContentGravity.LEFT,
       // ),
       EachRow(
-        columns: [
-          EachColumn(text: SystemWindowText(text: 'هل تريد حفظ مهمة لجهة الاتصال دي', fontSize: 20, textColor: Colors.black, fontWeight: FontWeight.BOLD)),
-        ],
+        columns: [EachColumn(text: SystemWindowText(text: 'هل تريد حفظ مهمة لجهة الاتصال', fontSize: 20, textColor: Colors.black, fontWeight: FontWeight.BOLD))],
         gravity: ContentGravity.CENTER,
       ),
       EachRow(
         columns: [
           EachColumn(
-            text: SystemWindowText(text: "Some random description.", fontSize: 20, textColor: Colors.black, fontWeight: FontWeight.BOLD),
+            text: SystemWindowText(text: "Some random description.", fontSize: 20, textColor: Colors.grey, fontWeight: FontWeight.BOLD),
           ),
         ],
         gravity: ContentGravity.CENTER,
@@ -114,12 +114,28 @@ void showOverlayWindow(String phoneNumber) {
   );
 }
 
+Future<String> getCallerName(String phoneNumber) async {
+  String callerName = '';
+  final contacts = await ContactsService.getContacts(withThumbnails: false);
+
+  try {
+    final contact = contacts.where((c1) => c1.phones!.any((phone) => phone.value!.replaceAll(' ', '').contains(phoneNumber))).firstOrNull;
+    if (contact != null) {
+      callerName = contact.displayName!;
+      log('Incoming call from $callerName ($phoneNumber)');
+      return contact.displayName!;
+    } else {
+      log('Incoming call from unknown number ($phoneNumber)');
+    }
+  } catch (e) {
+    log('error');
+  }
+
+  return '';
+}
+
 @pragma('vm:entry-point')
-Future<void> phoneStateBackgroundCallbackHandler(
-  PhoneStateBackgroundEvent event,
-  String number,
-  int duration,
-) async {
+Future<void> phoneStateBackgroundCallbackHandler(PhoneStateBackgroundEvent event, String number, int duration) async {
   switch (event) {
     case PhoneStateBackgroundEvent.incomingstart:
       log('Incoming call start, number: $number, duration: $duration s');
