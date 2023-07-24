@@ -24,38 +24,6 @@ Future<void> showOverlayWindow(String phoneNumber) async {
   );
   SystemWindowBody body = SystemWindowBody(
     rows: [
-      // EachRow(
-      //   columns: [
-      //     EachColumn(text: SystemWindowText(text: phoneNumber, fontSize: 12, textColor: Colors.black45)),
-      //   ],
-      //   gravity: ContentGravity.CENTER,
-      // ),
-      // EachRow(
-      //   columns: [
-      //     EachColumn(
-      //       text: SystemWindowText(text: "Long data of the body", fontSize: 12, textColor: Colors.black87, fontWeight: FontWeight.BOLD),
-      //       padding: SystemWindowPadding.setSymmetricPadding(6, 8),
-      //       decoration: SystemWindowDecoration(startColor: Colors.white, borderRadius: 25.0),
-      //       margin: SystemWindowMargin(top: 4),
-      //     ),
-      //   ],
-      //   gravity: ContentGravity.CENTER,
-      // ),
-      // EachRow(
-      //   columns: [
-      //     EachColumn(text: SystemWindowText(text: "Description", fontSize: 10, textColor: Colors.black45)),
-      //   ],
-      //   gravity: ContentGravity.LEFT,
-      //   margin: SystemWindowMargin(top: 8),
-      // ),
-      // EachRow(
-      //   columns: [
-      //     EachColumn(
-      //       text: SystemWindowText(text: "Some random description.", fontSize: 13, textColor: Colors.black54, fontWeight: FontWeight.BOLD),
-      //     ),
-      //   ],
-      //   gravity: ContentGravity.LEFT,
-      // ),
       EachRow(
         columns: [EachColumn(text: SystemWindowText(text: 'هل تريد حفظ مهمة لجهة الاتصال', fontSize: 20, textColor: Colors.black, fontWeight: FontWeight.BOLD))],
         gravity: ContentGravity.CENTER,
